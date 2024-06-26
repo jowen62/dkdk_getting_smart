@@ -31,7 +31,7 @@
   p_dir_in <- ""
 
   # set export directory
-  p_dir_out <- "/Users/jowen/Documents/contract_work/dkdk_getting_smart/output/gem_prep/"
+  p_dir_out <- "/Users/jowen/Documents/contract_work/dkdk_getting_smart/data/output/gem_prep/"
 
 #===========#
 # load data #
@@ -61,15 +61,23 @@
     # use pie chart colors
     scale_fill_manual(values = c("#38761d", "#999999")) +
 
+    # add a box around the proficient levels
+    annotate("rect", xmin = 2.5, xmax = 4.5, ymin = -0.25, ymax = 15.25,
+             alpha = 0, color= "#BF9000") +
+
+    # add label
+    geom_text(label = 'Proficient', x = 3.5, y = 15.6, color = "#BF9000") +
+
     # clear background
     theme_bw() +
 
     # make the text match - doesn't currently work and I'm not sure how important it is to pursue
-    # theme(text = element_text(family = "Roboto")) +
-    theme(text = element_text(size = 16)) +
+    theme(text = element_text(size = 16),
+          legend.position = 'bottom') +
 
     # relabel
-    labs(x = "Performance Level", y = "Number of Students", fill = "Subject")
+    labs(x = "Performance Level", y = "Number of Students", fill = "Subject",
+         title = "ISAT Performance 2023-24, All Grades")
 
 #=========#
 # export #
