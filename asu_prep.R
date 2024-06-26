@@ -32,12 +32,97 @@
   p_dir_in <- ""
 
   # set the sheet location
-  p_file_summary <- "https://docs.google.com/spreadsheets/d/16RG3zeKHrEFqAtnK-RoLJFZhu11VcmUo8UDKNUWQ5V8/edit?gid=575332293#gid=575332293"
+  # p_file_summary <- "https://docs.google.com/spreadsheets/d/16RG3zeKHrEFqAtnK-RoLJFZhu11VcmUo8UDKNUWQ5V8/edit?gid=575332293#gid=575332293"
+  p_file_summary <- "https://docs.google.com/spreadsheets/d/14iU_8-_AW9XHWx-ZBKpXRxNb-oQijSohhEe1bNm9Vhw/edit?gid=575332293#gid=575332293"
 
   # set export directory
   p_dir_out <- "/Users/jowen/Documents/contract_work/dkdk_getting_smart/data/output/asu_prep/"
 
-# ACT ASPIRE (Grade 9) -------------------------------------------------------------------------------------------
+# Exact Path ------------------------------------------------------------------------------------------------------
+
+  # load data - ugh, wish I still had my multi-level header function
+  in_ep_ss_change <- as.data.table(read_sheet(p_file_summary, sheet = "Data Summary Overview", range = "A1:G5"))
+  in_ep_npr       <- as.data.table(read_sheet(p_file_summary, sheet = "Data Summary Overview", range = "I1:O5"))
+
+  # spread subjects to the next column
+  setnames(in_ep_ss_change, c("...3", "...5", "...7"), c("Math", "Reading", "ELA"))
+  setnames(in_ep_npr, c("...3", "...5", "...7"), c("Math", "Reading", "ELA"))
+
+  # complete the info
+  setnames(in_ep_ss_change, paste(colnames(in_ep_ss_change), unlist(in_ep_ss_change[1]), sep = " - "))
+  setnames(in_ep_npr, paste(colnames(in_ep_npr), unlist(in_ep_npr[1]), sep = " - "))
+
+  # melt
+  ep_ss_change_long <- melt.data.table(in_ep_ss_change[2:4], id.vars = "Exact Path - Grade", variable.factor = F)
+  ep_npr_long <- melt.data.table(in_ep_npr[2:4], id.vars = "Exact Path - Grade", variable.factor = F)
+
+  # separate the variable
+  ep_ss_change_long[, ":=" (value   = as.numeric(value),
+                            grade   = as.numeric(gsub("th", "", `Exact Path - Grade`)),
+                            subject = stringr::str_extract(variable, ".*(?= - )"),
+                            type    = stringr::str_extract(variable, 'Microschool|Recommended'))]
+
+  ep_npr_long[, ":=" (value   = as.numeric(value),
+                      grade   = as.numeric(gsub('th', '', `Exact Path - Grade`)),
+                      subject = stringr::str_extract(variable, ".*(?= - )"),
+                      type    = stringr::str_extract(variable, "Beginning of Year|End of Year"))]
+
+  # recode
+  ep_ss_change_long[type == 'Microschool', type := "Actual"]
+
+  # plot
+  plot_ep_change <- ggplot(ep_ss_change_long, aes(x = subject, y = value, fill = type)) +
+
+    # add columns
+    geom_col(position = 'dodge') +
+
+    # change colors
+    scale_fill_manual(values = c("#38761d", "#999999")) +
+
+    # add column labels
+    geom_text(aes(label = value, y = value / 2), position = position_dodge(width = 0.9), colour = 'white') +
+
+    # split by grade
+    facet_wrap( ~ grade) +
+
+    # remove background
+    theme_bw() +
+
+    # make pretty
+    theme(legend.position  = 'bottom',
+          strip.background = element_rect(fill = "#FFF2CC"),
+          text             = element_text(size = 16)) +
+
+    # make labels cleaner
+    labs(x = "Subject", y = "Score", fill = '', title = "Exact Path Scale Score Change")
+
+  # plot
+  plot_ep_npr <- ggplot(ep_npr_long, aes(x = subject, y = value, fill = type)) +
+
+    # add columns
+    geom_col(position = 'dodge') +
+
+    # change colors
+    scale_fill_manual(values = c("#999999", "#38761d")) +
+
+    # add column labels
+    geom_text(aes(label = value, y = value / 2), position = position_dodge(width = 0.9), colour = 'white') +
+
+    # split by grade
+    facet_wrap( ~ grade) +
+
+    # remove background
+    theme_bw() +
+
+    # make pretty
+    theme(legend.position  = 'bottom',
+          strip.background = element_rect(fill = "#FFF2CC"),
+          text             = element_text(size = 16)) +
+
+    # make labels cleaner
+    labs(x = "Subject", y = "Score", fill = '', title = "Exact Path National Percentile Rank")
+
+# ACT ASPIRE (Grade 9) ---changedFiles()# ACT ASPIRE (Grade 9) -------------------------------------------------------------------------------------------
 
   # load the data - it's easiest if we pre-specify the sections of this first sheet that contain different data
   in_act_aspire <- as.data.table(read_sheet(p_file_summary, sheet = "Data Summary Overview", range = "A7:G11"))
@@ -156,10 +241,6 @@
     labs(x = "Subject", y = "Percentage of Students", fill = "Performance Level",
          title = "ACT Performance, Grade 11")
 
-  # now let's deal with average scores
-  # add state data
-  # in_act_avg[, state_23 := 17.7]
-
   # melt long, removing writing because it doesn't contribute to the composite score
   act_avg <- melt.data.table(in_act_avg,
                              id.vars = 'Microschool ACT Average Scores',
@@ -170,9 +251,6 @@
 
   # abbreviate names
   act_avg[, subject := stringr::str_remove(subject, " \\(of 36\\)")]
-
-  # add annotation over the science bar since it's the shortest
-  # act_avg[subject == 'Science']
 
   # plot,
   plot_act_scores <- ggplot(act_avg[subject != "Composite"], aes(x = subject, y = score)) +
@@ -205,13 +283,22 @@
     labs(x = "ACT Subject", y = "Avg. Score", title = "ACT Performance, Grade 11, 2023-24 School Year")
 
 
-# Exact Path ------------------------------------------------------------------------------------------------------
-
-  # load data
-
-
 
 # export ----------------------------------------------------------------------------------------------------------
+
+  # Exact Path score change
+  ggsave(filename = "ep_score_change.png",
+         plot     = plot_ep_change,
+         path     = p_dir_out,
+         width    = 10,
+         height   = 5)
+
+  # Exact Path NPR
+  ggsave(filename = "ep_npr.png",
+         plot     = plot_ep_npr,
+         path     = p_dir_out,
+         width    = 10,
+         height   = 5)
 
   # ACT ASPIRE performance levels
   ggsave(filename = "act_aspire_perf_levels.png",
