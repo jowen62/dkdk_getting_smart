@@ -89,8 +89,7 @@
     theme_bw() +
 
     # make pretty
-    theme(legend.position  = 'bottom',
-          strip.background = element_rect(fill = "#FFF2CC"),
+    theme(strip.background = element_rect(fill = "#FFF2CC"),
           text             = element_text(size = 16)) +
 
     # make labels cleaner
@@ -115,8 +114,7 @@
     theme_bw() +
 
     # make pretty
-    theme(legend.position  = 'bottom',
-          strip.background = element_rect(fill = "#FFF2CC"),
+    theme(strip.background = element_rect(fill = "#FFF2CC"),
           text             = element_text(size = 16)) +
 
     # make labels cleaner
@@ -163,12 +161,11 @@
     theme_bw() +
 
     # make the text match - doesn't currently work and I'm not sure how important it is to pursue
-    theme(text = element_text(size = 16),
-          legend.position = 'bottom') +
+    theme(text = element_text(size = 20)) +
 
     # add labels
     labs(x = "Subject", y = "Percentage of Students", fill = "Performance Level",
-         title = "ACT Aspire Performance, Grade 9")
+         title = "ACT Aspire Performance", subtitle = "Grade 9, 2023-24 School Year")
 
 
 # ACT (Grade 11) --------------------------------------------------------------------------------------------------
@@ -233,13 +230,13 @@
     theme_bw() +
 
     # make the text match - doesn't currently work and I'm not sure how important it is to pursue
-    theme(text = element_text(size = 16),
+    theme(text = element_text(size = 20),
           legend.position = 'bottom',
           strip.background = element_rect(fill = "#FFF2CC")) +
 
     # add labels
     labs(x = "Subject", y = "Percentage of Students", fill = "Performance Level",
-         title = "ACT Performance, Grade 11")
+         title = "ACT Performance", subtitle = "Grade 11, 2023-24 School Year")
 
   # melt long, removing writing because it doesn't contribute to the composite score
   act_avg <- melt.data.table(in_act_avg,
@@ -265,24 +262,22 @@
     geom_hline(yintercept = 22.2, color = "#BF9000") +
 
     # add label
-    geom_text(aes(x = "Science", y = 24, label = "ASUP Composite \n2023-24"), color = "#BF9000") +
+    geom_text(aes(x = "Science", y = 24, label = "Composite \n2023-24"), color = "#BF9000") +
 
     # add the state average in 2023
     geom_hline(yintercept = 17.7, color = "#999999") +
 
     # label state average - could not get this to work with annotate(), despite that being what the error calls for
-    geom_text(aes(x = "Science", y = 19, label = "State Avg. \n2022-23"), color = "#999999") +
+    geom_text(aes(x = "Science", y = 20, label = "State Avg. \n2022-23"), color = "#999999") +
 
     # remove background
     theme_bw() +
 
     # make text larger for reports
-    theme(text = element_text(size = 16)) +
+    theme(text = element_text(size = 20)) +
 
     # add labels
-    labs(x = "ACT Subject", y = "Avg. Score", title = "ACT Performance, Grade 11, 2023-24 School Year")
-
-
+    labs(x = "ACT Subject", y = "Avg. Score", title = "ACT Avg. Scores", subtitle = "Grade 11, 2023-24 School Year")
 
 # export ----------------------------------------------------------------------------------------------------------
 
@@ -290,28 +285,28 @@
   ggsave(filename = "ep_score_change.png",
          plot     = plot_ep_change,
          path     = p_dir_out,
-         width    = 10,
-         height   = 5)
+         width    = 12,
+         height   = 4)
 
   # Exact Path NPR
   ggsave(filename = "ep_npr.png",
          plot     = plot_ep_npr,
          path     = p_dir_out,
-         width    = 10,
-         height   = 5)
+         width    = 12,
+         height   = 4)
 
   # ACT ASPIRE performance levels
   ggsave(filename = "act_aspire_perf_levels.png",
          plot     = plot_act_aspire,
          path     = p_dir_out,
-         width    = 8,
+         width    = 10,
          height   = 6)
 
   # ACT performance levels
   ggsave(filename = "act_perf_levels.png",
          plot     = plot_act_levels,
          path     = p_dir_out,
-         width    = 6,
+         width    = 7,
          height   = 8)
 
   # ACT average scores
@@ -319,4 +314,4 @@
          plot     = plot_act_scores,
          path     = p_dir_out,
          width    = 8,
-         height   = 6)
+         height   = 5)
