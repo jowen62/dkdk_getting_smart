@@ -82,13 +82,19 @@
       theme(legend.position = 'bottom',
             legend.direction = "vertical",
             legend.title = element_blank(),
-            legend.text = element_text(size = 12)) +
+            legend.text = element_text(size = 12),
+
+            # and title
+            plot.title = element_text(hjust = 0.5, size = 14)) +
 
       # add labels
       geom_text(aes(label = paste0(round(value * 100), "%"), y = label_position), x = 3.5, color = 'white') +
 
       # set colors
-      scale_fill_manual(values = c("#38761D", "#999999", "#BF9000", "#B6D7A8"))
+      scale_fill_manual(values = c("#38761D", "#999999", "#BF9000", "#B6D7A8")) +
+
+      # add title
+      labs(title = "BIPOC-Identifying \nStudents")
 
     # save plot
     ggsave("pie_bipoc.png", plot_bipoc, path = paste0(p_dir_out, p_school, '/'), width = 3, height = 4.5)
@@ -154,13 +160,19 @@
       theme(legend.position  = 'bottom',
             legend.direction = "vertical",
             legend.title     = element_blank(),
-            legend.text      = element_text(size = 12)) +
+            legend.text      = element_text(size = 12),
+
+            # and title
+            plot.title = element_text(hjust = 0.5, size = 14)) +
 
       # add labels
       geom_text(aes(label = paste0(round(value * 100), "%"), y = label_position), x = 3.5, color = 'white') +
 
       # set colors
-      scale_fill_manual(values = c("#38761D", "#999999"))
+      scale_fill_manual(values = c("#38761D", "#999999")) +
+
+      # add title
+      labs(title = "Neurodivergent \nStudents")
 
     # save plot
     ggsave("pie_neurodiverse.png", plot_neuro, path = paste0(p_dir_out, p_school, '/'), width = 3, height = 4.5)
@@ -226,13 +238,19 @@
       theme(legend.position  = 'bottom',
             legend.direction = "vertical",
             legend.title     = element_blank(),
-            legend.text      = element_text(size = 12)) +
+            legend.text      = element_text(size = 12),
+
+            # and title
+            plot.title = element_text(hjust = 0.5, size = 14)) +
 
       # add labels
       geom_text(aes(label = paste0(round(value * 100), "%"), y = label_position), x = 3.5, color = 'white') +
 
       # set colors
-      scale_fill_manual(values = c("#38761D", "#999999"))
+      scale_fill_manual(values = c("#38761D", "#999999")) +
+
+      # add title
+      labs(title = "Free & Reduced Lunch \nEligible Students")
 
     # save plot
     ggsave("pie_econdis.png", plot_econdis, path = paste0(p_dir_out, p_school, '/'), width = 3, height = 4.5)
