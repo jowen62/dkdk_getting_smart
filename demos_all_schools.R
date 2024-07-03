@@ -220,7 +220,8 @@
     if (any(sub_econdis[, value] == 1)) {sub_econdis <- sub_econdis[value == 1]}
 
     # create pie chart that looks like the ones Excel makes
-    plot_econdis <- ggplot(sub_econdis, aes(ymax = value_end, ymin = value_start, xmax = 4, xmin = 3, fill = variable)) +
+    plot_econdis <- ggplot(sub_econdis, aes(ymax = value_end, ymin = value_start, xmax = 4, xmin = 3,
+                                            fill = stringr::str_wrap(rev(variable), width = 24))) +
 
       # create a stacked bar chart
       geom_rect() +
