@@ -29,7 +29,7 @@
 
   # set input directory
   p_file_attend <- "https://docs.google.com/spreadsheets/d/19otMzcKy5-s2rdkrYZzMeWbnelnGDVLdHMcZeIgboHE/edit?gid=0#gid=0"
-  p_file_grades <- "/Users/jowen/Documents/contract_work/dkdk_getting_smart/data/raw_data/ellemercito/Grading Data-23-24.xlsx - Sheet1.csv"
+  p_file_grades <- "/Users/jowen/Documents/contract_work/dkdk_getting_smart/data/raw_data/issaquah/Grading Data-23-24.xlsx - Sheet1.csv"
 
   # set export directory
   p_dir_out <- ""
