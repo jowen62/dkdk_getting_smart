@@ -34,9 +34,7 @@
   # set export directory
   p_dir_out <- "/Users/jowen/Documents/contract_work/dkdk_getting_smart/data/output/ellemercito/"
 
-#===========#
-# load data #
-#===========#
+# test scores -----------------------------------------------------------------------------------------------------
 
   # load the scores
   in_scores <- as.data.table(read_sheet(p_file_scores))
@@ -80,6 +78,8 @@
     # add title
     labs(title = "Seton Subject Totals")
 
-  ggsave("plot_seton_scores.png", plot_scores, path = p_dir_out, width = 8, height = 4)
+# export ----------------------------------------------------------------------------------------------------------
 
+  # save plot
+  ggsave("plot_seton_scores.png", plot_scores, path = p_dir_out, width = 8, height = 4)
 

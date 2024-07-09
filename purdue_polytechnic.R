@@ -57,9 +57,38 @@
   psat_long <- melt.data.table(psat_stack, measure.vars = c("ERW", "Math"), variable.factor = F, variable.name = 'subject')
 
   # now cast time period wide
-  dcast.data.table(psat_long[num_type == 'pct'], grade_level + subject ~ time, value.var = "value")
+  # dcast.data.table(psat_long[num_type == 'pct'], grade_level + subject ~ time, value.var = "value")
 
-  # waiting to hear back how to interpret PSAT data
+  # add n-size manually
+  psat_long[grade_level == 9, n_size := 8]
+  psat_long[grade_level == 10, n_size := 4]
+
+  # make the plot of Percentages, though we don't know what they mean
+  plot_psat_cb <- ggplot(psat_long[time != "EOY Difference" & num_type == "pct"],
+         aes(x = subject, y = value * 100, fill = time)) +
+
+    # add columns
+    geom_col(position = 'dodge') +
+
+    # split by grade level
+    facet_grid( ~ paste("Grade", grade_level), scales = "free") +
+
+    # change bar colors
+    scale_fill_manual(values = c("#999999", "#38761d")) +
+
+    # remove background
+    theme_bw() +
+
+    # some more beautifying
+    theme(text             = element_text(size = 20),
+          strip.background = element_rect(fill = "#FFF2CC")) +
+
+    # relabel
+    labs(x = "Subject", y = "Percentage", fill = "Period", title = "PSAT Performance, 2023-24") +
+
+    # add value labels
+    geom_text(aes(label = round(value * 100, 1), y = (value * 100) / 2), position = position_dodge(width = 0.9), color = 'white')
+
 
 # STAR ------------------------------------------------------------------------------------------------------------
 
@@ -103,7 +132,7 @@
     geom_col(position = 'dodge') +
 
     # split by grade level
-    facet_grid(variable ~ grade_level, scales = "free") +
+    facet_grid(variable ~ paste("Grade", grade_level), scales = "free") +
 
     # change bar colors
     scale_fill_manual(values = c("#999999", "#38761d")) +
@@ -125,3 +154,4 @@
 
   # star
   ggsave("plot_star.png", plot_star, path = p_dir_out, width = 10, height = 6)
+  ggsave("plot_psat_cb_pct.png", plot_psat_cb, path = p_dir_out, width = 10, height = 4)

@@ -29,7 +29,7 @@
   p_opt_exp <- F
 
   # set location for raw data to save
-  p_dir_in <- "/Users/jowen/Documents/contract_work/dkdk_getting_smart/raw_data/sci_prep_acad/"
+  p_dir_in <- "/Users/jowen/Documents/contract_work/dkdk_getting_smart/data/raw_data/sci_prep_acad/"
 
   # set export directory
   p_dir_out <- ""
@@ -115,7 +115,7 @@
 # test data - 2023-24 raw scores ----------------------------------------------------------------------------------
 
   # set location
-  p_file_test_24 <- "/Users/jowen/Documents/contract_work/dkdk_getting_smart/raw_data/sci_prep_acad/Copy of 2023-2024 , 2022 - 2023 Scantron Testing Data for Data Collection Plan C1.xlsx"
+  p_file_test_24 <- "/Users/jowen/Documents/contract_work/dkdk_getting_smart/data/raw_data/sci_prep_acad/Copy of 2023-2024 , 2022 - 2023 Scantron Testing Data for Data Collection Plan C1.xlsx"
 
   # load only the current year data (can come back for prior year in the next set of columns if needed)
   in_test_hs_24 <- as.data.table(readxl::read_excel(p_file_test_24, sheet = 'Blue Team (HS)', col_types = 'text', range = "A2:F67"))
@@ -156,5 +156,5 @@
   long_test_hs_24[, c('current_grade_average', 'score') := lapply(.SD, as.numeric), .SDcols = c('current_grade_average', 'score')]
 
   # next would be to find the cut scores and see if we can do any summary analysis with that
-  # test commit
+
 
