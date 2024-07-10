@@ -32,7 +32,7 @@
   p_file_grades <- "/Users/jowen/Documents/contract_work/dkdk_getting_smart/data/raw_data/issaquah/Grading Data-23-24.xlsx - Sheet1.csv"
 
   # set export directory
-  p_dir_out <- ""
+  p_dir_out <- "/Users/jowen/Documents/contract_work/dkdk_getting_smart/data/output/issaquah/"
 
 # attendance ------------------------------------------------------------------------------------------------------
 
@@ -91,11 +91,15 @@
                                                   'P', 'F'))]
 
   # summarize
-  course_summary <- course_long[!is.na(value) & subject %chin% c("ELA", "Math", "Science", "Social Studies"),
+  course_summary_subj <- course_long[!is.na(value) & subject %chin% c("ELA", "Math", "Science", "Social Studies"),
                                 .(.N), by = c('subject', 'value', 'semester')]
 
+  # how many unique students per subject
+  course_long[!is.na(value) & subject %chin% c("ELA", "Math", "Science", "Social Studies"),
+              uniqueN(student_id), by = 'subject']
+
   # remove blanks and limit to core subjects
-  plot_grades <- ggplot(course_summary, aes(x = value, y = N, fill = semester)) +
+  plot_grades_subj <- ggplot(course_summary_subj, aes(x = value, y = N, fill = semester)) +
 
     # add bars
     geom_col(position = 'dodge') +
@@ -122,7 +126,49 @@
 
     labs(x = "Course Grade", y = "N Students", fill = 'Semester', title = 'Core Subject Grade Distribution')
 
+  # Erica would also like one that combines core subjects and splits by grade
+
+  # interpret grade from grad year
+  course_long[, grade_level := 12 - (as.numeric(grad_year) - 2024)]
+
+  # summarize
+  course_summary_grade <- course_long[!is.na(value) & subject %chin% c("ELA", "Math", "Science", "Social Studies"),
+                                     .(.N), by = c('grade_level', 'value', 'semester')]
+
+  # how many unique students per grade
+  course_long[!is.na(value) & subject %chin% c("ELA", "Math", "Science", "Social Studies"),
+              uniqueN(student_id), by = 'grade_level']
+
+  # now plot
+  plot_grades_grade <- ggplot(course_summary_grade, aes(x = value, y = N, fill = semester)) +
+
+    # add bars
+    geom_col(position = 'dodge') +
+
+    # add colors
+    scale_fill_manual(values = c("#999999", "#38761d")) +
+
+    # force axis to use integers
+    scale_y_continuous(breaks = seq(0, 18, 2)) +
+
+    # add labels
+    geom_text(aes(label = N, y = N / 2), position = position_dodge(width = 0.9), color = 'white') +
+
+    # split by semester & subject
+    facet_wrap( ~ grade_level, scales = 'free') +
+
+    # remove grey background
+    theme_bw() +
+
+    # some more beautifying
+    theme(text             = element_text(size = 20),
+          strip.background = element_rect(fill = "#FFF2CC"),
+          panel.grid.minor = element_blank()) +
+
+    labs(x = "Course Grade", y = "N Students", fill = 'Semester', title = 'Core Subject Grade Distribution by Grade Level')
+
 # export ----------------------------------------------------------------------------------------------------------
 
-  ggsave("plot_course_grades.png", plot_grades, path = p_dir_out, width = 10, height = 5)
+  ggsave("plot_course_grades_by_subj.png", plot_grades_subj, path = p_dir_out, width = 10, height = 5)
+  ggsave("plot_course_grades_by_grade.png", plot_grades_grade, path = p_dir_out, width = 10, height = 3.5)
 

@@ -118,8 +118,8 @@
   star_stack[grade_level == 9, n_size := 8]
   star_stack[grade_level == 10, n_size := 3]
 
-  # change the order
-  star_stack[, subject := factor(subject, levels = c("ERW", "Reading", "Math"))]
+  # recode ERW and Reading as ELA
+  star_stack[subject %chin% c("ERW", "Reading"), subject := "ELA"]
 
   # expand abbreviations
   star_stack[variable == 'GE', variable := "Grade Equivalency"]
