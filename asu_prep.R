@@ -240,41 +240,56 @@
 
   # melt long, removing writing because it doesn't contribute to the composite score
   act_avg <- melt.data.table(in_act_avg,
-                             id.vars = 'Microschool ACT Average Scores',
-                             measure.vars = grep("of 36", colnames(in_act_avg), value = T),
-                             variable.name = "subject",
+                             id.vars         = 'Microschool ACT Average Scores',
+                             measure.vars    = grep("of 36", colnames(in_act_avg), value = T),
+                             variable.name   = "subject",
                              variable.factor = F,
-                             value.name = 'score')
+                             value.name      = 'score')
 
   # abbreviate names
   act_avg[, subject := stringr::str_remove(subject, " \\(of 36\\)")]
 
+  # add state
+  act_avg <- rbind(act_avg,
+                   data.table(`Microschool ACT Average Scores` = "SY 23",
+                              subject                          = "State Avg.\n2022-23",
+                              score                            = 17.7))
+
+  # add fill color
+  act_avg[subject == 'Composite', fill_color := "total"]
+  act_avg[subject == 'State Avg.\n2022-23', fill_color := "past"]
+  act_avg[is.na(fill_color), fill_color := 'subjects']
+
   # plot,
-  plot_act_scores <- ggplot(act_avg[subject != "Composite"], aes(x = subject, y = score)) +
+  plot_act_scores <- ggplot(act_avg[!subject %chin% c("ELA")], aes(x = subject, y = score, fill = fill_color)) +
 
     # add bars
-    geom_col(fill = "#38761d") +
+    geom_col() +
 
     # add labels
     geom_text(aes(label = score, y = score / 2), color = 'white') +
 
+    # change the colors for contrast
+    scale_fill_manual(values = c("#999999", "#38761d", "#BF9000")) +
+
     # add composite
-    geom_hline(yintercept = 22.2, color = "#BF9000") +
+    # geom_hline(yintercept = 22.2, color = "#BF9000") +
 
     # add label
-    geom_text(aes(x = "Science", y = 24, label = "Composite \n2023-24"), color = "#BF9000") +
+    # geom_text(aes(x = "Science", y = 24, label = "Composite \n2023-24"), color = "#BF9000") +
 
     # add the state average in 2023
-    geom_hline(yintercept = 17.7, color = "#999999") +
+    # geom_hline(yintercept = 17.7, color = "#999999") +
 
     # label state average - could not get this to work with annotate(), despite that being what the error calls for
-    geom_text(aes(x = "Science", y = 20, label = "State Avg. \n2022-23"), color = "#999999") +
+    # geom_text(aes(x = "Science", y = 20, label = "State Avg. \n2022-23"), color = "#999999") +
 
     # remove background
     theme_bw() +
 
     # make text larger for reports
-    theme(text = element_text(size = 20)) +
+    theme(text            = element_text(size = 20),
+          legend.position = "none") +
 
     # add labels
     labs(x = "ACT Subject", y = "Avg. Score", title = "ACT Avg. Scores", subtitle = "Grade 11, 2023-24 School Year")
@@ -313,5 +328,5 @@
   ggsave(filename = "act_avg_scores.png",
          plot     = plot_act_scores,
          path     = p_dir_out,
-         width    = 8,
+         width    = 8.5,
          height   = 5)

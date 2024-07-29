@@ -63,15 +63,18 @@
   psat_long[grade_level == 9, n_size := 8]
   psat_long[grade_level == 10, n_size := 4]
 
+  # make grades presentable
+  psat_long[, grade_level := factor(paste("Grade", grade_level), levels = c("Grade 9", "Grade 10"))]
+
   # make the plot of Percentages, though we don't know what they mean
   plot_psat_cb <- ggplot(psat_long[time != "EOY Difference" & num_type == "pct"],
-         aes(x = subject, y = value * 100, fill = time)) +
+                         aes(x = subject, y = value * 100, fill = time)) +
 
     # add columns
     geom_col(position = 'dodge') +
 
     # split by grade level
-    facet_grid( ~ paste("Grade", grade_level), scales = "free") +
+    facet_grid( ~ grade_level, scales = "free") +
 
     # change bar colors
     scale_fill_manual(values = c("#999999", "#38761d")) +
@@ -125,6 +128,9 @@
   star_stack[variable == 'GE', variable := "Grade Equivalency"]
   star_stack[variable == 'PR', variable := "Percentile Rank"]
 
+  # make grades presentable
+  star_stack[, grade_level := factor(paste("Grade", grade_level), levels = c("Grade 9", "Grade 10"))]
+
   # make the plot
   plot_star <- ggplot(star_stack[time != "EOY Difference"], aes(x = subject, y = value, fill = time)) +
 
@@ -132,7 +138,7 @@
     geom_col(position = 'dodge') +
 
     # split by grade level
-    facet_grid(variable ~ paste("Grade", grade_level), scales = "free") +
+    facet_grid(variable ~ grade_level, scales = "free") +
 
     # change bar colors
     scale_fill_manual(values = c("#999999", "#38761d")) +
